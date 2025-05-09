@@ -25,8 +25,13 @@ def read_file(file_name):
     with open(file_name, 'r') as file:
         return file.read()
 
-def write_file():
-    return
+def edit_file(file_name, new_content):
+    print("Edit file called with file path: ", file_name)
+    new_content = new_content.strip()
+
+    with open(file_name, 'w') as file:
+        file.write(new_content)
+    return "OK"
 
 tools = [
     {
@@ -62,12 +67,33 @@ tools = [
                 "required": ["file_name"]
             }
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "edit_file",
+            "description": "Edit the content of a file",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "file_name": {
+                        "type": "string",
+                        "description": "name of the file to edit"
+                    },
+                    "new_content": {
+                        "type": "string",
+                        "description": "new content to write to the file"
+                    }
+                },
+                "required": ["file_name", "new_content"]
+            }
+        }
     }
 ]
 
 messages = [
     {
-        "role": "user", "content": "List the files in the directory /Users/arvindthangamani/projects/TechXpresso-Demo and Analyze the contents of the file main.py"
+        "role": "user", "content": "add a subtract function to the calculator.py file"
     }
 ]
 
@@ -123,6 +149,22 @@ while True:
                     "content": function_response
                 })
 
+            elif function_name == "edit_file":
+                file_name = function_args.get("file_name")
+                content = function_args.get("new_content")
+
+
+
+                function_response = edit_file(file_name, content)
+
+
+                messages.append({
+                    "tool_call_id": tool_call["id"],
+                    "role": "tool",
+                    "name": function_name,
+                    "content": function_response
+                })
+
 
         payload = {
             "model": "gpt-4",
@@ -133,9 +175,11 @@ while True:
 
         final_response = requests.post(API_URL, headers=headers, json=payload)
         final_response_data = final_response.json()
+        print(final_response_data)
         final_message = final_response_data["choices"][0]["message"]["content"]
         print(final_message)
     else:
-        # If no function call, print the assistant's message
+        
         print(assistant_message["content"])
+        break
 

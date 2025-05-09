@@ -55,6 +55,3 @@ response = requests.post("https://api.openai.com/v1/responses",
 
 print(response.json()['output'])
 tool_call_parser(response.json()['output'])
-
-
-
