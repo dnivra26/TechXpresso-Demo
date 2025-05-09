@@ -33,6 +33,14 @@ def edit_file(file_name, new_content):
         file.write(new_content)
     return "OK"
 
+def create_file(file_name, content):
+    print("Create file called with file path: ", file_name)
+    content = content.strip()
+    with open(file_name, 'w') as file:
+        file.write(content)
+    return "OK"
+
+
 tools = [
     {
         "type": "function",
@@ -88,12 +96,34 @@ tools = [
                 "required": ["file_name", "new_content"]
             }
         }
-    }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "create_file",
+            "description": "Create a new file",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "file_name": {
+                        "type": "string",
+                        "description": "name of the file to create"
+                    },
+                    "new_content": {
+                        "type": "string",
+                        "description": "content to write to the file"
+                    }
+                },
+                "required": ["file_name", "new_content"]
+            }
+        }
+    },
+    
 ]
 
 messages = [
     {
-        "role": "user", "content": "add a subtract function to the calculator.py file"
+        "role": "user", "content": "create a fizz_buzz.py with a fizz_buzz function. Do not add any comment"
     }
 ]
 
@@ -156,6 +186,22 @@ while True:
 
 
                 function_response = edit_file(file_name, content)
+
+
+                messages.append({
+                    "tool_call_id": tool_call["id"],
+                    "role": "tool",
+                    "name": function_name,
+                    "content": function_response
+                })
+
+            elif function_name == "create_file":
+                file_name = function_args.get("file_name")
+                content = function_args.get("new_content")
+
+
+
+                function_response = create_file(file_name, content)
 
 
                 messages.append({
