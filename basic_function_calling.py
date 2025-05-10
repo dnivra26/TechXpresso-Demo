@@ -10,6 +10,9 @@ headers = {
     "Content-Type": "application/json"
 }
 
+def get_weather(location, unit="fahrenheit"):
+    print("Get weather tool called with location: ", location, " and unit: ", unit)
+    return f"The weather in {location} is 22 degrees {unit}."
 
 tools = [
     {
@@ -35,9 +38,11 @@ tools = [
     }
 ]
 
+user_input = input("Enter your message: ")
+
 messages = [
     {
-        "role": "user", "content": "What's the weather like in Boston?"
+        "role": "user", "content": user_input
     }
 ]
 
@@ -68,7 +73,7 @@ if "tool_calls" in assistant_message:
             location = function_args.get("location")
             unit = function_args.get("unit", "celsius")
 
-            function_response = f"The weather in {location} is 22 degrees {unit}."
+            function_response = get_weather(location, unit)
 
 
             messages.append({
@@ -88,6 +93,5 @@ if "tool_calls" in assistant_message:
     final_response_data = final_response.json()
     final_message = final_response_data["choices"][0]["message"]["content"]
     print(final_message)
-else:
-    # If no function call, print the assistant's message
-    print(assistant_message["content"])
+else:    
+    print("Final response: ", assistant_message["content"])
