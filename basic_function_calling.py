@@ -10,7 +10,7 @@ headers = {
     "Content-Type": "application/json"
 }
 
-# Define the function schema
+
 tools = [
     {
         "type": "function",
@@ -59,6 +59,7 @@ messages.append(assistant_message)
 
 if "tool_calls" in assistant_message:
     for tool_call in assistant_message["tool_calls"]:
+        print("Tool call: ", tool_call)
         function_name = tool_call["function"]["name"]
         function_args = json.loads(tool_call["function"]["arguments"])
 
